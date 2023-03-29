@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild  } from '@angular/core';
 import { UserService } from '../service/user.service';
-import { NgForm, FormControl, FormGroup, Validators  } from '@angular/forms';
+import { NgForm, FormControl, FormGroup, Validators,FormArray  } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -23,7 +23,7 @@ export class AddUserComponent implements OnInit {
   ngOnInit(): void {  }
   addUserForm = new FormGroup({
       service: new FormControl("Addnewuser"),
-      name: new FormControl("",[Validators.required,Validators.minLength(3)]),
+      name: new FormControl("",[Validators.required]),
       state: new FormControl("",[Validators.required]),
       zip: new FormControl("",[Validators.required]),
       amount: new FormControl("",[Validators.required]),
@@ -34,7 +34,7 @@ export class AddUserComponent implements OnInit {
   AddUser(){
       this._freeservice.saveUser(this.addUserForm.value).subscribe(res=>{
         this.data = res;
-        console.log(this.data);
+        //console.log(this.data);
         
         if(this.data.status == 200){
             this.userStatus=1;
@@ -43,7 +43,7 @@ export class AddUserComponent implements OnInit {
             {
               this.router.navigateByUrl('/Home');
             },
-            3000);
+            1000);
         }else{
            this.userStatus=2;
            this.userMessage = this.data.msg;

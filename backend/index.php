@@ -3,7 +3,6 @@ header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: *");
 header("Access-Control-Allow-Methods: *");
 
-require_once 'database.php';
 // this will be your backend
 // some things this file should do
 // get query string 
@@ -28,38 +27,108 @@ require_once 'database.php';
   {
   	
 
-  	public function addnewRow()
+  	   public function addnewRow($name,$state,$zip,$amount,$qty,$item)
 	   {
 	   		 // csv file open
 		   if (($open = fopen("data.csv", "r")) !== FALSE) 
 		   {
-		  
 		      // csv file get data and convert to array  
 		      while (($getdata = fgetcsv($open, 1000, ",")) !== FALSE) 
 		      {        
 		         $data[] = $getdata; 
 		      }
-
 		      // file close
 		      fclose($open);
 		   }
-		  
 		   // Append to new data in csv file  
-		   $data[] = ["id" => 1, "name" => "Liquid Saffron", "state" => "WB","zip"=>'700192','amount'=>'1200','qty'=>'10','item'=>'Test'];
+		   $data[] = ["id" => count($data), 
+		   "name" => $name, 
+		   "state" => $state,
+		   "zip"=> $zip,
+		   'amount'=> $amount,
+		   'qty'=> $qty,
+		   'item'=>$item];
 
 		   // csv File update
 		   $path = 'data.csv';
-		 
 		   $file_Path = fopen($path, 'w');
-
 		   foreach ( $data as $data ) 
 		   {
-		   	// echo $data['id'];
 		      fputcsv($file_Path, $data);
 		   }
-
 		   // File close
 		   fclose($file_Path);
+		   return true;
+	   }
+
+	   public function updateRow($name,$state,$zip,$amount,$qty,$item,$user_id)
+	   {
+	   		 // csv file open
+		   if (($open = fopen("data.csv", "r")) !== FALSE) 
+		   {
+		      // csv file get data and convert to array  
+		   	$i=0;
+		      while (($getdata = fgetcsv($open, 1000, ",")) !== FALSE) 
+		      {        
+		         
+		         if($getdata[0]==$user_id){
+		         	$data[] = [
+					   "id" => $user_id,
+					   "name" => $name, 
+					   "state" => $state,
+					   "zip"=> $zip,
+					   'amount'=> $amount,
+					   'qty'=> $qty,
+					   'item'=>$item
+					];
+		         }else{
+		         	$data[] = $getdata; 
+		         }
+		         $i++;
+		      }
+		      // file close
+		      fclose($open);
+		   }
+		   
+		   // csv File update
+		   $path = 'data.csv';
+		   $file_Path = fopen($path, 'w');
+		   foreach ( $data as $data ) 
+		   {
+		      fputcsv($file_Path, $data);
+		   }
+		   // File close
+		   fclose($file_Path);
+		   return true;
+	   }
+
+	   public function deleteRow($user_id)
+	   {
+	       // csv file open
+		   if (($open = fopen("data.csv", "r")) !== FALSE) 
+		   {
+		      // csv file get data and convert to array  
+		   	$i=0;
+		      while (($getdata = fgetcsv($open, 1000, ",")) !== FALSE) 
+		      {        
+		         if($getdata[0]!=$user_id){
+		         	$data[] = $getdata; 
+		         }
+		         $i++;
+		      }
+		      // file close
+		      fclose($open);
+		   }
+		   // csv File update
+		   $path = 'data.csv';
+		   $file_Path = fopen($path, 'w');
+		   foreach ( $data as $data ) 
+		   {
+		      fputcsv($file_Path, $data);
+		   }
+		   // File close
+		   fclose($file_Path);
+		   return true;
 	   }
 
 	   public function getAllData()
@@ -118,10 +187,11 @@ require_once 'database.php';
 		  
 		      // csv file get data and convert to array  
 		   	 $i=0;
+		   	 $newdata            = array();
 		      while (($getdata = fgetcsv($open, 1000, ",")) !== FALSE) 
 		      { 
 		         //$data[] = $getdata; 
-		      	if($i==$id){
+		      	if($getdata[0]==$id){
 		      		 $newdata            = array();
 		         	 $newdata['id']           = $getdata[0];
 			         $newdata['name']         = $getdata[1];
@@ -130,8 +200,8 @@ require_once 'database.php';
 			         $newdata['amount']       = $getdata[4];
 			         $newdata['qty']          = $getdata[5];
 			         $newdata['item']         = $getdata[6];
-		      	}		        
-		         $i++;		         
+		      	}
+		        $i++;		         
 		      }
 
 		      // file close
@@ -157,11 +227,13 @@ require_once 'database.php';
   		echo "ok";
   }
 
+
   $data = json_decode(file_get_contents("php://input"));
   // add new record to database
-  if(isset($data->service) && $data->service!=''  && $data->service='Addnewuser'){
+  //print($data->service); die();
+  if(isset($data->service) && $data->service=='Addnewuser'){
   	// creating object
-  	$insertdata=new DB_con();
+  	$newvar = new AddUpdateCSV();
 
   	// Posted Values
 	$name=$data->name;
@@ -171,8 +243,8 @@ require_once 'database.php';
 	$qty=$data->qty;
 	$item=$data->item;	
 	//Insert Function Calling
-	$sql=$insertdata->insert($name,$state,$zip,$amount,$qty,$item);
-	if($sql)
+	$addnewRow=$newvar->addnewRow($name,$state,$zip,$amount,$qty,$item);
+	if($addnewRow)
 	{
 		// Message for successfull insertion
 		echo json_encode(['status'=>'200','msg'=>'Record inserted successfully']);
@@ -187,9 +259,9 @@ require_once 'database.php';
   }	
 
   // Edit User
-  if(isset($data->service) && $data->service!=''  && $data->service='Edituser'){
+  if(isset($data->service) && $data->service=='Edituser'){
   	// creating object
-  	$updatetdata=new DB_con();
+  	$updatetdata=new AddUpdateCSV();
 
   	// Posted Values
 	$name=$data->name;
@@ -200,8 +272,8 @@ require_once 'database.php';
 	$item=$data->item;	
 	$user_id=$data->user_id;	
 	//Update Function Calling
-	$sql=$updatetdata->update($name,$state,$zip,$amount,$qty,$item,$user_id);
-	if($sql)
+	$update=$updatetdata->updateRow($name,$state,$zip,$amount,$qty,$item,$user_id);
+	if($update)
 	{
 		// Message for successfull 
 		echo json_encode(['status'=>'200','msg'=>'Record Updated successfully']);
@@ -218,11 +290,11 @@ require_once 'database.php';
   //print_r($data);
   if(isset($data->item_id) && $data->item_id!=''){
   		// creating object
-  	    $deletedata=new DB_con();
+  	    $deletedata=new AddUpdateCSV();
   	    $item_id=$data->item_id;
   	    //Update Function Calling
-		$sql=$deletedata->delete($item_id);
-		if($sql)
+		$delete=$deletedata->deleteRow($item_id);
+		if($delete)
 		{
 			// Message for successfull 
 			echo json_encode(['status'=>'200','msg'=>'Record has been removed successfully']);

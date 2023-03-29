@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild  } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserService } from '../service/user.service';
-import { NgForm, FormControl, FormGroup, Validators  } from '@angular/forms';
+import { NgForm, FormControl, FormGroup, Validators,FormArray  } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router,ActivatedRoute } from '@angular/router';
 
@@ -16,7 +16,8 @@ export class EditUserComponent implements OnInit {
   data: any={};
   userMessage: any;
   userStatus: any;
-  
+   
+
   constructor(private _freeservice:UserService,private router: Router,private route: ActivatedRoute) { }
   ngOnInit(): void {
      this.item_id = this.route.snapshot.params['item_id'];
@@ -24,12 +25,12 @@ export class EditUserComponent implements OnInit {
   }
   editUserForm = new FormGroup({
       service: new FormControl("Edituser"),
-      name: new FormControl(""),
-      state: new FormControl(""),
-      zip: new FormControl(""),
-      amount: new FormControl(""),
-      qty: new FormControl(""),
-      item: new FormControl(""),
+      name: new FormControl("",[Validators.required]),
+      state: new FormControl("",[Validators.required]),
+      zip: new FormControl("",[Validators.required]),
+      amount: new FormControl("",[Validators.required]),
+      qty: new FormControl("",[Validators.required]),
+      item: new FormControl("",[Validators.required]),
       user_id: new FormControl("")
   });
 
@@ -40,7 +41,19 @@ export class EditUserComponent implements OnInit {
 	    this._freeservice.getDetailById(this.item_id).subscribe((data: any) => {
 	      if (data != null && data.details != null) {
 	        var resultData = data.details;
-	        this.userdetail = resultData;      
+	        this.userdetail = resultData;   
+           this.editUserForm.patchValue({
+
+            name:this.userdetail.name,
+            state:this.userdetail.state,
+            zip:this.userdetail.zip,
+            amount:this.userdetail.amount,
+            qty:this.userdetail.qty,
+            item:this.userdetail.item,
+            user_id:this.userdetail.id
+
+          });
+
 	        
 	      }
 	    },
@@ -58,7 +71,7 @@ export class EditUserComponent implements OnInit {
             {
               this.router.navigateByUrl('/Home');
             },
-            3000);
+            1000);
         }else{
            this.userStatus=2;
            this.userMessage = this.data.msg;

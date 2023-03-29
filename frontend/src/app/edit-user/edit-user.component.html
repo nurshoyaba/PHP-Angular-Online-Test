@@ -26,36 +26,36 @@
         			<label for="name">User Name<span class="requiredStar">*</span></label>
         			<input type="hidden" name="service" formControlName="service">
         			<input type="text" class="form-control" id="username" required maxlength="255" name="name" value="{{ userdetail.name }}"  formControlName="name" >
-              <!-- <div class="form-text text-danger"  [hidden]="!fullname.errors?.['required']">User Name is required.</div>
-              <div class="form-text text-danger" *ngIf="fullname.errors?.['minLength']">User Name too short.</div> -->
+              <div class="form-text text-danger"  [hidden]="!fullname.errors?.['required']">User Name is required.</div>
+               <!-- <div class="form-text text-danger" *ngIf="fullname.errors?.['minLength']">User Name too short.</div> -->
               <input type="hidden" class="form-control" id="user_id" name="user_id"  value="{{ item_id }}"  >
         		</div>
         		<div class="col-md-6">
         			<label for="state">State<span class="requiredStar">*</span></label>
         			<input type="text" class="form-control" id="state" required maxlength="255" name="state" value="{{ userdetail.state }}" formControlName="state" >
-               <!-- <div class="form-text text-danger" *ngIf="state.errors?.['required']">State is required.</div> -->
+               <div class="form-text text-danger" *ngIf="state.errors?.['required']">State is required.</div>
         		</div>
         		<div class="col-md-6">
         			<label for="zip">Zip<span class="requiredStar">*</span></label>
         			<input type="number" class="form-control" id="zip" required  name="zip" value ="{{ userdetail.zip }}" formControlName="zip" >
-              <!-- <div class="form-text text-danger" *ngIf="zip.errors?.['required'] ">Zip is required.</div> -->
+              <div class="form-text text-danger" *ngIf="zip.errors?.['required'] ">Zip is required.</div>
         		</div>
         		<div class="col-md-6">
         			<label for="amount">Amount<span class="requiredStar">*</span></label>
         			<input type="number" class="form-control" id="amount" required maxlength="255" name="amount" value="{{ userdetail.amount }}" formControlName="amount" >
-             <!--  <div class="form-text text-danger" *ngIf="amount.errors?.['required']">Amount is required.</div> -->
+              <div class="form-text text-danger" *ngIf="amount.errors?.['required']">Amount is required.</div>
         		</div>
         		<div class="col-md-6">
         			<label for="qty">Qty<span class="requiredStar">*</span></label>
         			<input type="number" class="form-control" id="qty" required min="0"  name="qty" value="{{ userdetail.qty }}" formControlName="qty">
-             <!--  <div class="form-text text-danger" *ngIf="qty.errors?.['required']">Qty is required.</div> -->
+              <div class="form-text text-danger" *ngIf="qty.errors?.['required']">Qty is required.</div>
         		</div>
         		<div class="col-md-6">
         			<label for="item">Item<span class="requiredStar">*</span></label>
         			<input type="text" class="form-control" id="item" required maxlength="255" name="item" value="{{ userdetail.item }}" formControlName="item" >
         		</div>
         		<div class="col-md-12">
-              <button class="btn btn-success" style="margin-top: 10px;" type="submit" >Submit</button>
+              <button class="btn btn-success" style="margin-top: 10px;" type="submit" [disabled]='editUserForm.invalid' >Submit</button>
             </div>
             <br><br>
             <div *ngIf="userStatus==1" class="alert alert-success" role="alert">

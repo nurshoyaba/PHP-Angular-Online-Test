@@ -27,7 +27,7 @@
         			<input type="hidden" name="service" formControlName="service">
         			<input type="text" class="form-control" id="username" required maxlength="255" name="name" formControlName="name" >
               <div class="form-text text-danger" *ngIf="fullname.errors?.['required'] && (fullname.touched || fullname.dirty)">User Name is required.</div>
-              <div class="form-text text-danger" *ngIf="fullname.errors?.['minLength']">User Name too short.</div>
+              <!-- <div class="form-text text-danger" *ngIf="fullname.errors?.['minLength']">User Name too short.</div> -->
         		</div>
         		<div class="col-md-6">
         			<label for="state">State<span class="requiredStar">*</span></label>

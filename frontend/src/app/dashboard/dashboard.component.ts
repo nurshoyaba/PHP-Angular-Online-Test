@@ -12,7 +12,9 @@ import { Router } from '@angular/router';
 export class DashboardComponent implements OnInit {
 	
   userlist: any=[];
- 
+  data: any={};
+  userMessage: any;
+  userStatus: any;
 
   constructor(private _freeservice:UserService,private router: Router) {
 
@@ -47,12 +49,23 @@ export class DashboardComponent implements OnInit {
 
 	deleteUser(item_id:any) {
     if(confirm("Are you sure to delete it ")) {
-        this._freeservice.deleteUser(item_id).subscribe((data: any) => {
-          if (data != null) {
-           this.getAllCsvlist();          
-          }
-        } ,
-        (error: any) => { });
+        this._freeservice.deleteUser(item_id).subscribe(res=>{
+        this.data = res;
+        
+        if(this.data.status == 200){
+            this.userStatus=1;
+            this.userMessage = this.data.msg;
+            setTimeout(() => 
+            {
+              this.router.navigateByUrl('/Home');
+            },
+            1000);
+        }else{
+           this.userStatus=2;
+           this.userMessage = this.data.msg;
+        }
+      },
+      (error: any) => { });
     }
 	}
 

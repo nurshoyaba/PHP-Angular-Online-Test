@@ -1,26 +1,27 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
- var apiUrl = "http://localhost:8080/backend/";
 
-  var httpLink = {
+
+var apiUrl = "http://localhost:8080/backend/";
+var httpLink = {
     getAllData: apiUrl + "index.php",
     getDetailById: apiUrl + "index.php",
     saveUser1: apiUrl + "index.php",
-  }
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
  
-  //constructor() { }
-  private usersUrl: string;
-  private userId:string="";
-  private token:string="";
+
+ 
   constructor(private http: HttpClient) {
-    this.usersUrl = 'http://13.126.229.245/retail/testhello.php';
+    
   }
+
   getAllData()
   {
     let url = "http://localhost:8080/backend/index.php?getCSVdata=getall";
@@ -38,7 +39,7 @@ export class UserService {
       return this.http.post(
         httpLink.saveUser1, 
         model, 
-        { headers, responseType: 'text'}
+        { headers, responseType: 'json'}
       );
   } 
 
@@ -46,7 +47,7 @@ export class UserService {
       const headers = new HttpHeaders().set('Content-Type', 'text/plain; charset=utf-8');
      
 
-      return this.http.post(httpLink.saveUser1 + '?item_id=' + model, { headers, responseType: 'text'});
+      return this.http.post(httpLink.saveUser1,{"item_id":model}, { headers, responseType: 'json'});
   }
 
 }
