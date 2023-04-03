@@ -2,239 +2,224 @@
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: *");
 header("Access-Control-Allow-Methods: *");
+include 'readfile.php';
 
-// this will be your backend
-// some things this file should do
-// get query string 
-// handle get requests
-// open and read data.csv file
-// handle post requests
-// (optional) write to csv file. 
-// format data into an array of objects 
-// return all data for every request. 
-// set content type of response.
-// return JSON encoded data
+  	class getCSVDatas 
+  	{
+  		use readFile;
+  		public $path="data.csv";
+  		public function getAllProduct($product_id="")
+  		{
+  			$readscsv=$this->readfile($this->path);
+  			//print_r($readscsv);
+  			$headers = array_shift($readscsv);
+  			$array = [];
+  			// if($product_id==''){
+  			// 	$array[] = [
+					// 	   "id"     => ucwords($headers[0]),
+					// 	   "name"   => ucwords($headers[1]), 
+					// 	   "state"  => ucwords($headers[2]),
+					// 	   "zip"    => ucwords($headers[3]),
+					// 	   'amount' => ucwords($headers[4]),
+					// 	   'qty'    => ucwords($headers[5]),
+					// 	   'item'   => ucwords($headers[6]),
+					// 	   'is_edit_show' => '0'
+					// 		];
+  			// }
+			// Combine the headers with each following row
+			
+			foreach ($readscsv as $row) {
+				  // echo $row[0];
+					
+					if($product_id!=''){
+						if($row[0]==$product_id){
+							$array[] = array_combine($headers, $row);
+						}
+					}else{
+						$array[] = array_combine($headers, $row);
+					}			    
+			}
+			return $array;
+  		}
+  		public function removeProduct($product_id)
+  		{
+  			try {
+  			    if($product_id>0){
+	  				/*---------------Update CSV FIle---------------------*/
+	  				$readscsv=$this->readfile($this->path);
+	  				$data=array();
+	  				foreach ($readscsv as $key => $products) {
+	  					$data1=array();
+	  					if($product_id!=$products[0]){
+					          $data1 = [
+							   "id"     => $products[0],
+							   "name"   => $products[1], 
+							   "state"  => $products[2],
+							   "zip"    => $products[3],
+							   'amount' => $products[4],
+							   'qty'    => $products[5],
+							   'item'   => $products[6]
+								];
+					         array_push($data,$data1);
+			  			}
+			  			
+	  				}
+				   	if($this->updateFile($this->path,$data)){
+				   	    $status="200";
+				   		$msg="Data has been removed successfully!.";
+				    }
+	  			}else{
+	  				throw new Exception("Something went wrong!.");
+	  			}
+	  			
+	  		}
+	  		catch(Exception $e) {
+			  $status='203';
+			  $msg= 'Error: ' .$e->getMessage();
+			}
+			return $output=json_encode(['status'=>$status,"msg"=>$msg]);
+  		}
+  		public function test_input($data)
+  		{
+  			$data = trim($data);
+			$data = stripslashes($data);
+			$data = htmlspecialchars($data);
+			return $data;
+  		}
 
+  		public function addUpdateProduct($post_data=[])
+  		{
+  			$status="203";
+		    $msg="Something went wrong!.";
+			try {
+			  if(empty($post_data['name'])){//
+	  				$errors=true;
+	  				 throw new Exception("Name is required");
+	  			}else{
+	  				$name=$this->test_input($post_data['name']);
+	  			}
 
+	  			if(empty($post_data['state'])){
+	  				 throw new Exception("State is required");
+	  			}else{
+	  				$state=$this->test_input($post_data['state']);
+	  			}
 
-   // header('Content-Type: text/csv');
-   // header('Content-Disposition: attachment; filename="data.csv"');
+	  			if(empty($post_data['zip'])==true || (!is_numeric($post_data['zip'])==true) ){
+	  				 throw new Exception("Invalid Zip code ");
+	  			}else{
+	  				$zip=$this->test_input($post_data['zip']);
+	  			}
 
-  /**
-   * 
-   */
-  class AddUpdateCSV 
-  {
-  	
+	  			if(empty($post_data['amount'])==true || (!is_numeric($post_data['amount'])==true) ){
+	  				throw new Exception("Invalid Product Amount ");
+	  			}else{
+	  				$amount=$this->test_input($post_data['amount']);
+	  			}
 
-  	   public function addnewRow($name,$state,$zip,$amount,$qty,$item)
-	   {
-	   		 // csv file open
-		   if (($open = fopen("data.csv", "r")) !== FALSE) 
-		   {
-		      // csv file get data and convert to array  
-		      while (($getdata = fgetcsv($open, 1000, ",")) !== FALSE) 
-		      {        
-		         $data[] = $getdata; 
-		      }
-		      // file close
-		      fclose($open);
-		   }
-		   // Append to new data in csv file  
-		   $data[] = ["id" => count($data), 
-		   "name" => $name, 
-		   "state" => $state,
-		   "zip"=> $zip,
-		   'amount'=> $amount,
-		   'qty'=> $qty,
-		   'item'=>$item];
+	  			if(empty($post_data['qty'])==true || (!is_numeric($post_data['qty'])==true) ){
+	  				throw new Exception("Invalid Product qty ");
+	  			}else{
+	  				$qty=$this->test_input($post_data['qty']);
+	  			}
 
-		   // csv File update
-		   $path = 'data.csv';
-		   $file_Path = fopen($path, 'w');
-		   foreach ( $data as $data ) 
-		   {
-		      fputcsv($file_Path, $data);
-		   }
-		   // File close
-		   fclose($file_Path);
-		   return true;
-	   }
+	  			if(empty($post_data['item'])==true){
+	  				throw new Exception("Item is required");
+	  			}else{
+	  				$item=$this->test_input($post_data['item']);
+	  			}
+	  			//return true;
+	  			$product_id=$post_data['product_id'];
+	  			if($product_id>0){
+	  				/*---------------Update CSV FIle---------------------*/
+	  				$readscsv=$this->readfile($this->path);
+	  				$data=array();
+	  				foreach ($readscsv as $key => $products) {
+	  					$data1=array();
+	  					if($products[1]==$name && $product_id!=$products[0]){
+	  						throw new Exception("Same Name Already Exits!.");
+			  			}elseif($product_id==$products[0]){
 
-	   public function updateRow($name,$state,$zip,$amount,$qty,$item,$user_id)
-	   {
-	   		 // csv file open
-		   if (($open = fopen("data.csv", "r")) !== FALSE) 
-		   {
-		      // csv file get data and convert to array  
-		   	$i=0;
-		      while (($getdata = fgetcsv($open, 1000, ",")) !== FALSE) 
-		      {        
-		         
-		         if($getdata[0]==$user_id){
-		         	$data[] = [
-					   "id" => $user_id,
-					   "name" => $name, 
-					   "state" => $state,
-					   "zip"=> $zip,
-					   'amount'=> $amount,
-					   'qty'=> $qty,
-					   'item'=>$item
-					];
-		         }else{
-		         	$data[] = $getdata; 
-		         }
-		         $i++;
-		      }
-		      // file close
-		      fclose($open);
-		   }
-		   
-		   // csv File update
-		   $path = 'data.csv';
-		   $file_Path = fopen($path, 'w');
-		   foreach ( $data as $data ) 
-		   {
-		      fputcsv($file_Path, $data);
-		   }
-		   // File close
-		   fclose($file_Path);
-		   return true;
-	   }
+			  			   $data1 = [
+						   "id"     => $product_id,
+						   "name"   => $name, 
+						   "state"  => $state,
+						   "zip"    => $zip,
+						   'amount' => $amount,
+						   'qty'    => $qty,
+						   'item'   => $item
+							];
+			  			}else{
+					          $data1 = [
+							   "id"     => $products[0],
+							   "name"   => $products[1], 
+							   "state"  => $products[2],
+							   "zip"    => $products[3],
+							   'amount' => $products[4],
+							   'qty'    => $products[5],
+							   'item'   => $products[6]
+								];
+					         
+			  			}
+			  			array_push($data,$data1);
+	  				}
+				   	if($this->updateFile($this->path,$data)){
+				   	    $status="200";
+				   		$msg="Data Updated successfully!.";
+				    }
+	  			}else{
+	  				/*---------------Add New Row in CSV FIle---------------------*/
+				    $readscsv=$this->readfile($this->path);
+	  				$data=$readscsv;
+	  				foreach ($data as $key => $products) {	  					
+	  					if($products[1]==$name){
+			  				throw new Exception("Data Already Exits!.");
+			  			}
+	  				}
+	  				$newdata = ["id"    => count($data), 
+							   "name"   => $name, 
+							   "state"  => $state,
+							   "zip"    => $zip,
+							   'amount' => $amount,
+							   'qty'    => $qty,
+							   'item'   => $item];
+				    array_push($data, $newdata);
 
-	   public function deleteRow($user_id)
-	   {
-	       // csv file open
-		   if (($open = fopen("data.csv", "r")) !== FALSE) 
-		   {
-		      // csv file get data and convert to array  
-		   	$i=0;
-		      while (($getdata = fgetcsv($open, 1000, ",")) !== FALSE) 
-		      {        
-		         if($getdata[0]!=$user_id){
-		         	$data[] = $getdata; 
-		         }
-		         $i++;
-		      }
-		      // file close
-		      fclose($open);
-		   }
-		   // csv File update
-		   $path = 'data.csv';
-		   $file_Path = fopen($path, 'w');
-		   foreach ( $data as $data ) 
-		   {
-		      fputcsv($file_Path, $data);
-		   }
-		   // File close
-		   fclose($file_Path);
-		   return true;
-	   }
+				    if($this->updateFile($this->path,$data)){
+				   	    $status="200";
+				   		$msg="Data Added successfully!.";
+				    }
+	  			}
+	  			
+			}
 
-	   public function getAllData()
-	   {
-	   		 // csv file open
-	   	   $data                = array();
-	   	   $response['details'] = array();
-		   if (($open = fopen("data.csv", "r")) !== FALSE) 
-		   {
-		  
-		      // csv file get data and convert to array  
-		   	$i=0;
-		      while (($getdata = fgetcsv($open, 1000, ",")) !== FALSE) 
-		      { 
-       
-		         //$data[] = $getdata; 
-		         $newdata            = array();
-		         if($i==0){
-		         	 $newdata['id']           = ucwords($getdata[0]);
-			         $newdata['name']         = ucwords($getdata[1]);
-			         $newdata['state']        = ucwords($getdata[2]);
-			         $newdata['zip']          = ucwords($getdata[3]);
-			         $newdata['amount']       = ucwords($getdata[4]);
-			         $newdata['qty']          = ucwords($getdata[5]);
-			         $newdata['item']         = ucwords($getdata[6]);
-			         $newdata['is_edit_show'] ='0';
-		         }else{
-		         	 $newdata['id']           = $getdata[0];
-			         $newdata['name']         = $getdata[1];
-			         $newdata['state']        = $getdata[2];
-			         $newdata['zip']          = $getdata[3];
-			         $newdata['amount']       = $getdata[4];
-			         $newdata['qty']          = $getdata[5];
-			         $newdata['item']         = $getdata[6];
-			         $newdata['is_edit_show'] ='1';
-		         }
-		         $i++;
-		        
+			//catch exception
+			catch(Exception $e) {
+			  $status='203';
+			  $msg= 'Error: ' .$e->getMessage();
+			}
 
+			return $output=json_encode(['status'=>$status,"msg"=>$msg]);
+			
+  		}
 
-		         array_push($response['details'], $newdata);
-		      }
-
-		      // file close
-		      fclose($open);
-		   }
-		   return json_encode(['status'=>'200','details'=>$response['details']]);
-	   }
-	   public function getDataById($id)
-	   {
-	   		 // csv file open
-	   	   $data                = array();
-	   	   $response['details'] = array();
-		   if (($open = fopen("data.csv", "r")) !== FALSE) 
-		   {
-		  
-		      // csv file get data and convert to array  
-		   	 $i=0;
-		   	 $newdata            = array();
-		      while (($getdata = fgetcsv($open, 1000, ",")) !== FALSE) 
-		      { 
-		         //$data[] = $getdata; 
-		      	if($getdata[0]==$id){
-		      		 $newdata            = array();
-		         	 $newdata['id']           = $getdata[0];
-			         $newdata['name']         = $getdata[1];
-			         $newdata['state']        = $getdata[2];
-			         $newdata['zip']          = $getdata[3];
-			         $newdata['amount']       = $getdata[4];
-			         $newdata['qty']          = $getdata[5];
-			         $newdata['item']         = $getdata[6];
-		      	}
-		        $i++;		         
-		      }
-
-		      // file close
-		      fclose($open);
-		   }
-		   return json_encode(['status'=>'200','details'=>$newdata]);
-	   }
-  }
-
-  
+  		
+  	}
+  $obj=new getCSVDatas();
 
   if(isset($_GET['getCSVdata']) && $_GET['getCSVdata']=='getall' ){
-  	     $newvar = new AddUpdateCSV();
-  		 echo $newvar->getAllData();
+  	  // echo $obj->getAllProduct();
+  	    echo json_encode(['status'=>'200','details'=>$obj->getAllProduct()]);
   }
 
   if(isset($_GET['Id']) && $_GET['Id']!=''){
-  	$newvar = new AddUpdateCSV();
-  	 echo $newvar->getDataById($_GET['Id']);
+  	   //echo $obj->getAllProduct($_GET['Id']);
+  	   echo json_encode(['status'=>'200','details'=>$obj->getAllProduct($_GET['Id'])]);
   }
- 		
-  if(isset($_POST['service'])){
-  		echo "ok";
-  }
-
 
   $data = json_decode(file_get_contents("php://input"));
-  // add new record to database
-  //print($data->service); die();
+  /*--------------------------------add new Product-----------------------------*/
   if(isset($data->service) && $data->service=='Addnewuser'){
-  	// creating object
-  	$newvar = new AddUpdateCSV();
-
   	// Posted Values
 	$name=$data->name;
 	$state=$data->state;
@@ -242,27 +227,26 @@ header("Access-Control-Allow-Methods: *");
 	$amount=$data->amount;
 	$qty=$data->qty;
 	$item=$data->item;	
-	//Insert Function Calling
-	$addnewRow=$newvar->addnewRow($name,$state,$zip,$amount,$qty,$item);
-	if($addnewRow)
-	{
-		// Message for successfull insertion
-		echo json_encode(['status'=>'200','msg'=>'Record inserted successfully']);
-	}
-	else
-	{
-		// Message for unsuccessfull insertion
-		echo json_encode(['status'=>'203','msg'=>'Something went wrong. Please try again']);
-	}
-	die();
+
+	$post_inputs=array('name'=>$name,'state'=>$state,'zip'=>$zip,'amount'=>$amount,'qty'=>$qty,'item'=>$item,'product_id'=>'');
+	$msg="Add New Product";
+	$status="0";
+	try {
+		    $addProduct=$obj->addUpdateProduct($post_inputs);
+		    if($addProduct){//
+  				echo $addProduct;
+  			}else{
+  			   	  throw new Exception("Something went wrong!.");
+  			}
+  		}
+    catch(Exception $e) {
+		  return 'Error: ' .$e->getMessage();
+		}
 
   }	
 
-  // Edit User
+  /*--------------------------------Update Product-----------------------------*/
   if(isset($data->service) && $data->service=='Edituser'){
-  	// creating object
-  	$updatetdata=new AddUpdateCSV();
-
   	// Posted Values
 	$name=$data->name;
 	$state=$data->state;
@@ -270,41 +254,39 @@ header("Access-Control-Allow-Methods: *");
 	$amount=$data->amount;
 	$qty=$data->qty;
 	$item=$data->item;	
-	$user_id=$data->user_id;	
+	$product_id=$data->user_id;	
 	//Update Function Calling
-	$update=$updatetdata->updateRow($name,$state,$zip,$amount,$qty,$item,$user_id);
-	if($update)
-	{
-		// Message for successfull 
-		echo json_encode(['status'=>'200','msg'=>'Record Updated successfully']);
-	}
-	else
-	{
-		// Message for unsuccessfull
-		echo json_encode(['status'=>'203','msg'=>'Something went wrong. Please try again']);
-	}
-	die();
+	$post_inputs=array('name'=>$name,'state'=>$state,'zip'=>$zip,'amount'=>$amount,'qty'=>$qty,'item'=>$item,'product_id'=>$product_id);
+	$msg="Update Product";
+	$status="0";
+	try {
+		    $updateProduct=$obj->addUpdateProduct($post_inputs);
+		    //print_r($updateProduct);
+		    if($updateProduct){//
+  				echo $updateProduct;
+  			}else{
+  			   	  throw new Exception("Something went wrong!.");
+  			}
+  		}
+    catch(Exception $e) {
+		  return 'Error: ' .$e->getMessage();
+		}
 
   }
 
-  //print_r($data);
+  /*-------------------------------------Remove Product-------------------------------*/
   if(isset($data->item_id) && $data->item_id!=''){
-  		// creating object
-  	    $deletedata=new AddUpdateCSV();
-  	    $item_id=$data->item_id;
-  	    //Update Function Calling
-		$delete=$deletedata->deleteRow($item_id);
-		if($delete)
-		{
-			// Message for successfull 
-			echo json_encode(['status'=>'200','msg'=>'Record has been removed successfully']);
+  		try {
+		    $remove=$obj->removeProduct($data->item_id);
+		    if($remove){//
+  				echo $remove;
+  			}else{
+  			   	  throw new Exception("Something went wrong!.");
+  			}
+  		}
+        catch(Exception $e) {
+		  return 'Error: ' .$e->getMessage();
 		}
-		else
-		{
-			// Message for unsuccessfull 
-			echo json_encode(['status'=>'203','msg'=>'Something went wrong. Please try again']);
-		}
-		die();
   }	
  
    

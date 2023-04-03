@@ -40,7 +40,8 @@ export class EditUserComponent implements OnInit {
 	  console.log(this.item_id);
 	    this._freeservice.getDetailById(this.item_id).subscribe((data: any) => {
 	      if (data != null && data.details != null) {
-	        var resultData = data.details;
+	        var resultData = data.details[0];
+         
 	        this.userdetail = resultData;   
            this.editUserForm.patchValue({
 

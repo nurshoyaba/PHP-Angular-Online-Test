@@ -1,6 +1,5 @@
 id,name,state,zip,amount,qty,item
-1,Liquid Saffron,WB,700192,1200,10,Test
-2,Mostly Slugs,PA,19008,13.3,2,AAH6748
-3,Jump Stain,CA,99388,56,3,MKII4400
-4,Scheckled Sherlock,WA,88990,987.56,1,TR909
-5,Liquid Saffron,WB,700192,1200,10,Test
+2,"Mostly Slugs",PA,19008,13.3,2,AAH6748
+3,"Jump Stain",CA,99388,56,3,MKII4400
+4,"Scheckled Sherlock",WA,88990,987.56,1,TR909
+5,"Liquid Saffron",WB,700192,1200,10,Test

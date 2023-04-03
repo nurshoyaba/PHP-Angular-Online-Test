@@ -73,11 +73,4 @@ export class AddUserComponent implements OnInit {
 
 
 }
-export class employeeForm {
-  Id: number = 0;
-  FirstName: string = "";
-  LastName: string = "";
-  Email: string = "";
-  Address: string = "";
-  Phone: string = "";
-}
+

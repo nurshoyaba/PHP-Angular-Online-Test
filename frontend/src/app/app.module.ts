@@ -12,6 +12,8 @@ import { ChildComponent } from './child/child.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AddUserComponent } from './add-user/add-user.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
+import { AgGridModule } from 'ag-grid-angular';
+import { CellCustomeComponent } from './cell-custome/cell-custome.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'Home', pathMatch: 'full'},
@@ -27,7 +29,8 @@ const routes: Routes = [
     ChildComponent,
     DashboardComponent,
     AddUserComponent,
-    EditUserComponent
+    EditUserComponent,
+    CellCustomeComponent
 
   ],
   imports: [
@@ -37,7 +40,9 @@ const routes: Routes = [
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule      
+    ReactiveFormsModule,
+    AgGridModule,
+    AgGridModule,      
   ],
   providers: [],
   bootstrap: [AppComponent]
