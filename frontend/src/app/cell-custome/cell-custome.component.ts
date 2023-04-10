@@ -14,7 +14,7 @@ export class CellCustomeComponent implements OnInit {
   params: any;
   userMessage: any;
   userStatus: any;
-  constructor(private _freeservice:UserService,private http: HttpClient, private router: Router) {}
+  constructor(private _userService:UserService,private http: HttpClient, private router: Router) {}
 
   agInit(params: any) {
     this.params = params;
@@ -35,9 +35,8 @@ export class CellCustomeComponent implements OnInit {
   }
 
   deleteUser() {
-  console.log(this.params.value);
     if(confirm("Are you sure to delete it ")) {
-        this._freeservice.deleteUser(this.params.value).subscribe(res=>{
+        this._userService.deleteUser(this.params.value).subscribe(res=>{
         this.data = res;
         
         if(this.data.status == 200){
@@ -45,7 +44,7 @@ export class CellCustomeComponent implements OnInit {
             this.userMessage = this.data.msg;
             setTimeout(() => 
             {
-              this.router.navigateByUrl('/Home');
+              window.location.reload();
             },
             1000);
         }else{

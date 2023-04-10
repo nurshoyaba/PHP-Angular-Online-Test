@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 })
 export class AddUserComponent implements OnInit {
 
-  
+  testvar="Nusrat";
   userdetail: any=[];
   data: any={};
   userMessage: any;

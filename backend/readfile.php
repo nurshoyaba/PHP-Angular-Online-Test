@@ -1,24 +1,37 @@
 <?php
 trait readFile {
+	// Read CSV FILE
 	public function readFile($path)
 	{
-		 if (($open = fopen($path, "r")) !== FALSE) 
-		 {
-		      // csv file get data and convert to array  
-		      while (($getdata = fgetcsv($open, 1000, ",")) !== FALSE) 
-		      {        
-		         $data[] = $getdata; 
-		      }
-		      // file close
-		      fclose($open);
-		}
-		return $data;
-	}
+		try {
+			  if(!file_exists($path)){
+	  				$errors=true;
+	  				 throw new Exception("No such file exits!.");
+	  			}else{
+	  			   if (($open = fopen($path, "r")) !== FALSE) 
+					 {
+					      // csv file get data and convert to array  
+					      while (($getdata = fgetcsv($open, 1000, ",")) !== FALSE) 
+					      {        
+					         $data[] = $getdata; 
+					      }
+					      // file close
+					      fclose($open);
+					}
+					return $data;
+	  			   
+	  			}
+	  		}
+	    catch(Exception $e) {
+			  return 'Error: ' .$e->getMessage();
+			}
 
+	}
+	// Update CSV FILE
 	public function updateFile($path,$data=[])
 	{
 		try {
-			  if(!file_exists($path)){//
+			  if(!file_exists($path)){
 	  				$errors=true;
 	  				 throw new Exception("No such file exits!.");
 	  			}else{
