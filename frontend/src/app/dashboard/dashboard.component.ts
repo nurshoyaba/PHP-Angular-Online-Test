@@ -116,7 +116,6 @@ export class DashboardComponent implements OnInit {
                  this.userMessage = this.data.msg;
               }
               
-             console.log(res);
             },
             (error: any) => { });
       }

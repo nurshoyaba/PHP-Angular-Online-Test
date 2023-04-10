@@ -31,9 +31,8 @@ export class CellCustomeComponent implements OnInit {
 
   viewRow() {
     let rowData = this.params;
-    console.log(rowData);
   }
-
+ // delete user function
   deleteUser() {
     if(confirm("Are you sure to delete it ")) {
         this._userService.deleteUser(this.params.value).subscribe(res=>{

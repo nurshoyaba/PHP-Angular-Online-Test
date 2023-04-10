@@ -34,7 +34,6 @@ export class AddUserComponent implements OnInit {
   AddUser(){
       this._userService.saveUser(this.addUserForm.value).subscribe(res=>{
         this.data = res;
-        //console.log(this.data);
         
         if(this.data.status == 200){
             this.userStatus=1;

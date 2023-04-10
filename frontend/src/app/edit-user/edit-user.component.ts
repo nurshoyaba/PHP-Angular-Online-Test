@@ -35,9 +35,8 @@ export class EditUserComponent implements OnInit {
   });
 
  
-
+ // get detail by id
   getDetailById() {
-	  console.log(this.item_id);
 	    this._userService.getDetailById(this.item_id).subscribe((data: any) => {
 	      if (data != null && data.details != null) {
 	        var resultData = data.details[0];
@@ -61,10 +60,10 @@ export class EditUserComponent implements OnInit {
 	      (error: any) => { });
 	}
 
+  //edit user function
    EditUser(){
       this._userService.saveUser(this.editUserForm.value).subscribe(res=>{
         this.data = res;
-        console.log(this.data);
         if(this.data.status == 200){
             this.userStatus=1;
             this.userMessage = this.data.msg;
