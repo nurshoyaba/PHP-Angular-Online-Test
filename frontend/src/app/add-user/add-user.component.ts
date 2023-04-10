@@ -18,7 +18,7 @@ export class AddUserComponent implements OnInit {
   userMessage: any;
   userStatus: any;
   stringifiedData: any={}
-  constructor(private _freeservice:UserService,private router: Router) { }
+  constructor(private _userService:UserService,private router: Router) { }
 
   ngOnInit(): void {  }
   addUserForm = new FormGroup({
@@ -32,7 +32,7 @@ export class AddUserComponent implements OnInit {
   });
   
   AddUser(){
-      this._freeservice.saveUser(this.addUserForm.value).subscribe(res=>{
+      this._userService.saveUser(this.addUserForm.value).subscribe(res=>{
         this.data = res;
         //console.log(this.data);
         

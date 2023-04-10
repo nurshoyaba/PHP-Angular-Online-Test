@@ -18,7 +18,7 @@ export class EditUserComponent implements OnInit {
   userStatus: any;
    
 
-  constructor(private _freeservice:UserService,private router: Router,private route: ActivatedRoute) { }
+  constructor(private _userService:UserService,private router: Router,private route: ActivatedRoute) { }
   ngOnInit(): void {
      this.item_id = this.route.snapshot.params['item_id'];
      this.getDetailById();
@@ -38,7 +38,7 @@ export class EditUserComponent implements OnInit {
 
   getDetailById() {
 	  console.log(this.item_id);
-	    this._freeservice.getDetailById(this.item_id).subscribe((data: any) => {
+	    this._userService.getDetailById(this.item_id).subscribe((data: any) => {
 	      if (data != null && data.details != null) {
 	        var resultData = data.details[0];
          
@@ -62,7 +62,7 @@ export class EditUserComponent implements OnInit {
 	}
 
    EditUser(){
-      this._freeservice.saveUser(this.editUserForm.value).subscribe(res=>{
+      this._userService.saveUser(this.editUserForm.value).subscribe(res=>{
         this.data = res;
         console.log(this.data);
         if(this.data.status == 200){
